@@ -1,4 +1,3 @@
-import 'package:chat_app/constants.dart';
 import 'package:chat_app/helper/show_snack_bar.dart';
 import 'package:chat_app/widgets/custom_button.dart';
 import 'package:chat_app/widgets/custom_form_text_field.dart';
@@ -7,94 +6,103 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
-
-  static String id="RegisterPage";
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+  
+  static String id = 'login page';
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
-String? email;
-String? password;
-bool isLoading=false;
-GlobalKey<FormState> formKey=GlobalKey(); 
+class _LoginPageState extends State<LoginPage> {
+   bool isLoading = false;
 
+  GlobalKey<FormState> formKey = GlobalKey();
+
+  String? email, password;
   @override
   Widget build(BuildContext context) {
-    return  ModalProgressHUD(
+    return ModalProgressHUD(
       inAsyncCall: isLoading,
-      child:Scaffold(
-        backgroundColor: kPrimaryColor,
+      child: Scaffold(
         body: Padding(
-          padding:const EdgeInsets.symmetric(horizontal: 8) ,
+          padding:const EdgeInsets.symmetric(horizontal: 8),
           child: Form(
             key: formKey,
-            child:ListView(
+            child: ListView(
               children: [
-                const SizedBox(height: 75,),
-                Image.asset(  'assets/images/scholar.png',height: 100,),
-                Row(
+              const   SizedBox(
+                  height: 75,
+                ),
+                Image.asset(
+                  'assets/images/scholar.png',
+                  height: 100,
+                ),
+                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children:const [
-                    CustomText(
-                      text: 'Scholar Chat',
+                   CustomText(
+                    text:   'Scholar Chat',
                       style: TextStyle(
                         fontSize: 32,
                         color: Colors.white,
                         fontFamily: 'pacifico',
                       ),
-                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 75,),
-                Row(
+                 Row(
                   children:const [
-                    CustomText(text:  'REGISTER',
+                    CustomText(
+                     text: 'LOGIN',
                       style: TextStyle(
                         fontSize: 24,
                         color: Colors.white,
-                      ),),
-
+                      ),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 20,),
-                CustomFormTextField(
-                    onChanged: (data) {
+                const SizedBox(
+                  height: 20,
+                ),
+                  CustomFormTextField(
+                  onChanged: (data) {
                     email = data;
                   },
                   hintText: 'Email',
-                
                 ),
-               const  SizedBox(
+              const  SizedBox(
                   height: 10,
                 ),
-                CustomFormTextField(
+                   CustomFormTextField(
+                  obscureText: true,
                   onChanged: (data) {
                     password = data;
                   },
                   hintText: 'Password',
                 ),
-               const  SizedBox(
+               const SizedBox(
                   height: 20,
                 ),
-                CustomButton(
-                   onTap: () async {
+                   CustomButton(
+                  onTap: () async {
                     if (formKey.currentState!.validate()) {
                       isLoading = true;
                       setState(() {});
                       try {
-                        await registerUser();
-
-                        Navigator.pushNamed(context,'');
+                        await loginUser();
+                        Navigator.pushNamed(context, '',
+                            arguments: email);
                       } on FirebaseAuthException catch (ex) {
-                        if (ex.code == 'weak-password') {
-                          showSnackBar(context, 'weak password');
-                        } else if (ex.code == 'email-already-in-use') {
-                          showSnackBar(context, 'email already exists');
+                        if (ex.code == 'user-not-found') {
+                          showSnackBar(context, 'user not found');
+                        } else if (ex.code == 'wrong-password') {
+                          showSnackBar(context, 'wrong password');
                         }
                       } catch (ex) {
+                        print(ex);
                         showSnackBar(context, 'there was an error');
                       }
 
@@ -102,26 +110,26 @@ GlobalKey<FormState> formKey=GlobalKey();
                       setState(() {});
                     } else {}
                   },
-                  text: 'REGISTER',
+                  text: 'LOGIN',
                 ),
-                     const   SizedBox(
+               const SizedBox(
                   height: 10,
                 ),
-                Row(
+                  Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CustomText(
-                     text:  'already have an account?',
+                     text:  'dont\'t have an account?',
                       style:const TextStyle(
                         color: Colors.white,
                       ),
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pop(context);
+                        Navigator.pushNamed(context, '');
                       },
                       child: CustomText(
-                         text: 'Login',
+                        text: 'Register',
                         style:const TextStyle(
                           color: Color(0xffC7EDE6),
                         ),
@@ -129,16 +137,17 @@ GlobalKey<FormState> formKey=GlobalKey();
                     ),
                   ],
                 ),
+              
+              
               ],
-            ) ,
             ),
           ),
-      ) ,
-
+        ),
+      ),
     );
   }
-    Future<void> registerUser() async {
+    Future<void> loginUser() async {
     UserCredential user = await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(email: email!, password: password!);
+        .signInWithEmailAndPassword(email: email!, password: password!);
   }
 }
