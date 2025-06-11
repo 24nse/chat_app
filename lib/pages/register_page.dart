@@ -1,9 +1,10 @@
 import 'package:chat_app/constants.dart';
 import 'package:chat_app/helper/show_snack_bar.dart';
+import 'package:chat_app/pages/chat_page.dart';
+import 'package:chat_app/pages/login_page.dart';
 import 'package:chat_app/widgets/custom_button.dart';
 import 'package:chat_app/widgets/custom_form_text_field.dart';
 import 'package:chat_app/widgets/custom_text.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
@@ -80,28 +81,30 @@ GlobalKey<FormState> formKey=GlobalKey();
                   height: 20,
                 ),
                 CustomButton(
-                   onTap: () async {
-                    if (formKey.currentState!.validate()) {
-                      isLoading = true;
-                      setState(() {});
-                      try {
-                        await registerUser();
+                  //  onTap: () async {
+                  //   if (formKey.currentState!.validate()) {
+                  //     isLoading = true;
+                  //     setState(() {});
+                  //     try {
+                  //       await registerUser();
 
-                        Navigator.pushNamed(context,'');
-                      } on FirebaseAuthException catch (ex) {
-                        if (ex.code == 'weak-password') {
-                          showSnackBar(context, 'weak password');
-                        } else if (ex.code == 'email-already-in-use') {
-                          showSnackBar(context, 'email already exists');
-                        }
-                      } catch (ex) {
-                        showSnackBar(context, 'there was an error');
-                      }
+                  //       Navigator.pushNamed(context,LoginPage.id);
+                  //     } on FirebaseAuthException catch (ex) {
+                  //       if (ex.code == 'weak-password') {
+                  //         showSnackBar(context, 'weak password');
+                  //       } else if (ex.code == 'email-already-in-use') {
+                  //         showSnackBar(context, 'email already exists');
+                  //       }
+                  //     } catch (ex) {
+                  //       showSnackBar(context, 'there was an error');
+                  //     }
 
-                      isLoading = false;
-                      setState(() {});
-                    } else {}
-                  },
+                  //     isLoading = false;
+                  //     setState(() {});
+                  //   } else {}
+                  // },
+                 
+                 
                   text: 'REGISTER',
                 ),
                      const   SizedBox(
@@ -137,8 +140,8 @@ GlobalKey<FormState> formKey=GlobalKey();
 
     );
   }
-    Future<void> registerUser() async {
-    UserCredential user = await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(email: email!, password: password!);
-  }
+  //   Future<void> registerUser() async {
+  //   UserCredential user = await FirebaseAuth.instance
+  //       .createUserWithEmailAndPassword(email: email!, password: password!);
+  // }
 }
