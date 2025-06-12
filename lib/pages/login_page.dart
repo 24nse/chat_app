@@ -1,24 +1,26 @@
 import 'package:chat_app/constants.dart';
-import 'package:chat_app/helper/show_snack_bar.dart';
-import 'package:chat_app/pages/chat_page.dart';
 import 'package:chat_app/pages/register_page.dart';
 import 'package:chat_app/widgets/custom_button.dart';
 import 'package:chat_app/widgets/custom_form_text_field.dart';
 import 'package:chat_app/widgets/custom_text.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
+import '../helper/show_snack_bar.dart';
+import 'chat_page.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
-  
-  static String id = 'login page';
+
+  static const String screenRoute = 'login page';
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-   bool isLoading = false;
+  bool isLoading = false;
 
   GlobalKey<FormState> formKey = GlobalKey();
 
@@ -30,23 +32,18 @@ class _LoginPageState extends State<LoginPage> {
       child: Scaffold(
         backgroundColor: kPrimaryColor,
         body: Padding(
-          padding:const EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Form(
             key: formKey,
             child: ListView(
               children: [
-              const   SizedBox(
-                  height: 75,
-                ),
-                Image.asset(
-                  'assets/images/scholar.png',
-                  height: 100,
-                ),
-                 Row(
+                const SizedBox(height: 75),
+                Image.asset('assets/images/scholar.png', height: 100),
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children:const [
-                   CustomText(
-                    text:   'Scholar Chat',
+                  children: const [
+                    CustomText(
+                      text: 'Scholar Chat',
                       style: TextStyle(
                         fontSize: 32,
                         color: Colors.white,
@@ -55,96 +52,80 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 75,),
-                 Row(
-                  children:const [
+                const SizedBox(height: 75),
+                Row(
+                  children: const [
                     CustomText(
-                     text: 'LOGIN',
-                      style: TextStyle(
-                        fontSize: 24,
-                        color: Colors.white,
-                      ),
+                      text: 'LOGIN',
+                      style: TextStyle(fontSize: 24, color: Colors.white),
                     ),
                   ],
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                  CustomFormTextField(
+                const SizedBox(height: 20),
+                CustomFormTextField(
                   onChanged: (data) {
                     email = data;
                   },
                   hintText: 'Email',
                 ),
-              const  SizedBox(
-                  height: 10,
-                ),
-                   CustomFormTextField(
+                const SizedBox(height: 10),
+                CustomFormTextField(
                   obscureText: true,
                   onChanged: (data) {
                     password = data;
                   },
                   hintText: 'Password',
                 ),
-               const SizedBox(
-                  height: 20,
-                ),
-                   CustomButton(
-                
-                  // onTap: () async {
-                  //   if (formKey.currentState!.validate()) {
-                  //     isLoading = true;
-                  //     setState(() {});
-                  //     try {
-                  //       await loginUser();
-                  //       Navigator.pushNamed(context, LoginPage.id,
-                  //           arguments: email);
-                  //     } on FirebaseAuthException catch (ex) {
-                  //       if (ex.code == 'user-not-found') {
-                  //         showSnackBar(context, 'user not found');
-                  //       } else if (ex.code == 'wrong-password') {
-                  //         showSnackBar(context, 'wrong password');
-                  //       }
-                  //     } catch (ex) {
-                  //       print(ex);
-                  //       showSnackBar(context, 'there was an error');
-                  //     }
+                const SizedBox(height: 20),
+                CustomButton(
+                  onTap: () async {
+                    if (formKey.currentState!.validate()) {
+                      isLoading = true;
+                      setState(() {});
+                      try {
+                        await loginUser();
+                        Navigator.pushNamed(
+                          context,
+                          ChatPage.screenRoute,
+                          arguments: email,
+                        );
+                      } on FirebaseAuthException catch (ex) {
+                        if (ex.code == 'user-not-found') {
+                          showSnackBar(context, 'user not found');
+                        } else if (ex.code == 'wrong-password') {
+                          showSnackBar(context, 'wrong password');
+                        }
+                      } catch (ex) {
+                        print(ex);
+                        showSnackBar(context, 'there was an error');
+                      }
 
-                  //     isLoading = false;
-                  //     setState(() {});
-                  //   } else {}
-                  // },
-                
-                
+                      isLoading = false;
+                      setState(() {});
+                    } else {}
+                  },
+
                   text: 'LOGIN',
                 ),
-               const SizedBox(
-                  height: 10,
-                ),
-                  Row(
+                const SizedBox(height: 10),
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CustomText(
-                     text:  'dont\'t have an account?',
-                      style:const TextStyle(
-                        color: Colors.white,
-                      ),
+                      text: 'dont\'t have an account?',
+                      style: const TextStyle(color: Colors.white),
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, RegisterPage.id);
+                        Navigator.pushNamed(context, RegisterPage.screenRoute);
                       },
                       child: CustomText(
                         text: 'Register',
-                        style:const TextStyle(
-                          color: Color(0xffC7EDE6),
-                        ),
+                        style: const TextStyle(color: Color(0xffC7EDE6)),
                       ),
                     ),
                   ],
                 ),
-              
-              
               ],
             ),
           ),
@@ -152,8 +133,9 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-  //   Future<void> loginUser() async {
-  //   UserCredential user = await FirebaseAuth.instance
-  //       .signInWithEmailAndPassword(email: email!, password: password!);
-  // }
+
+  Future<void> loginUser() async {
+    UserCredential user = await FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email!, password: password!);
+  }
 }
